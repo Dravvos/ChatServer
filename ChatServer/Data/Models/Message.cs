@@ -1,4 +1,6 @@
-﻿namespace ChatServer.Data.Models
+﻿using ChatServer.Common.Enums;
+
+namespace ChatServer.Data.Models
 {
     public class Message
     {
@@ -13,5 +15,4 @@
         public bool IsDeleted { get; set; }                      // soft delete
         public MessageStatus Status { get; set; } = MessageStatus.Sent;
     }
-    public enum MessageStatus { Sent, Delivered, Read }
 }

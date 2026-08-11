@@ -1,4 +1,6 @@
-﻿namespace ChatServer.Data.Models
+﻿using ChatServer.Common.Enums;
+
+namespace ChatServer.Data.Models
 {
     public class Conversation
     {
@@ -10,5 +12,4 @@
         public ICollection<ConversationParticipant> Participants { get; set; } = [];
         public ICollection<Message> Messages { get; set; } = [];
     }
-    public enum ConversationType { Direct, Group }
 }

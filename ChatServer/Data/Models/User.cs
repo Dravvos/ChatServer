@@ -1,4 +1,6 @@
-﻿namespace ChatServer.Data.Models
+﻿using ChatServer.Common.Enums;
+
+namespace ChatServer.Data.Models
 {
     public class User
     {
@@ -18,5 +20,4 @@
         public ICollection<RefreshToken> RefreshTokens { get; set; } = [];
     }
 
-    public enum UserStatus { Offline, Online, Away }
 }

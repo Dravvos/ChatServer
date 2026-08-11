@@ -1,4 +1,6 @@
-﻿namespace ChatServer.Data.Models
+﻿using ChatServer.Common.Enums;
+
+namespace ChatServer.Data.Models
 {
     public class ConversationParticipant
     {
@@ -11,5 +13,4 @@
         public DateTime? LastReadAt { get; set; }
     }
 
-    public enum ParticipantRole { Member, Admin }
 }
