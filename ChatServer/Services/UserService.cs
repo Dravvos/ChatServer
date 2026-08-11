@@ -1,5 +1,5 @@
-﻿using ChatServer.Data.Repositories.Interfaces;
-using ChatServer.DTO;
+﻿using ChatServer.Contracts;
+using ChatServer.Data.Repositories.Interfaces;
 using ChatServer.Services.Interfaces;
 
 namespace ChatServer.Services

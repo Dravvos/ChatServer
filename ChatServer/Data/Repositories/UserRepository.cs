@@ -15,7 +15,7 @@ namespace ChatServer.Data.Repositories
         public Task SaveChangesAsync() => db.SaveChangesAsync();
 
         public Task<IReadOnlyList<User>> SearchAsync(string query, Guid requesterId, int limit = 10) =>
-           db.Users.Where(u => u.Id != requesterId && EF.Functions.ILike(u.Username, $"%{query}%")) // Postgres
+           db.Users.AsNoTracking().Where(u => u.Id != requesterId && EF.Functions.ILike(u.Username, $"%{query}%")) // Postgres
             .OrderBy(u => u.Username).Take(limit).ToListAsync()
             .ContinueWith(t => (IReadOnlyList<User>)t.Result);
     }

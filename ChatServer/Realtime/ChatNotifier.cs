@@ -1,5 +1,5 @@
 ﻿using ChatServer.Common.Enums;
-using ChatServer.DTO;
+using ChatServer.Contracts;
 using ChatServer.Hubs;
 using ChatServer.Services.Interfaces;
 using Microsoft.AspNetCore.SignalR;

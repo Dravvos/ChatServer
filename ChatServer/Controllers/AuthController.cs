@@ -1,4 +1,5 @@
-﻿using ChatServer.Services.Interfaces;
+﻿using ChatServer.DTO.Response;
+using ChatServer.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Data;
@@ -20,9 +21,9 @@ namespace ChatServer.Controllers
 
             return result switch
             {
-                AuthResult.Success success => Ok(new { accessToken = success.AccessToken, refreshToken = success.RefreshToken }),
+                AuthResult.Success success => Ok(new AuthResponse(success.AccessToken, success.RefreshToken)),
                 AuthResult.InvalidCredentials => Unauthorized(new { message = "Invalid credentials" }),
-                AuthResult.AccountLocked locked => StatusCode(423, new { until = locked.Until }),
+                AuthResult.AccountLocked locked => StatusCode(StatusCodes.Status423Locked, new { until = locked.Until }),
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new { message = "Unknown error" })
             };
         }

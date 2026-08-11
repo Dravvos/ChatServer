@@ -13,7 +13,7 @@ namespace ChatServer.Data.Repositories
                 .CountAsync(m => m.ConversationId == conversationId && m.SenderId != userId && m.IsDeleted == false && m.SentAt > (since ?? DateTime.MinValue));
 
         public Task<IReadOnlyList<Message>> GetPageAsync(Guid conversationId, DateTime? before, int take) =>
-            db.Messages
+            db.Messages.AsNoTracking()
                 .Where(m => m.ConversationId == conversationId && m.IsDeleted == false && (before == null || m.SentAt < before))
                 .OrderByDescending(m => m.SentAt)
                 .Take(take)

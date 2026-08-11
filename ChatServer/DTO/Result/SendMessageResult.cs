@@ -1,4 +1,6 @@
-﻿namespace ChatServer.DTO.Result
+﻿using ChatServer.Contracts;
+
+namespace ChatServer.DTO.Result
 {
     public abstract record SendMessageResult
     {

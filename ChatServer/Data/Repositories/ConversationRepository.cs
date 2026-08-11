@@ -7,10 +7,8 @@ namespace ChatServer.Data.Repositories
 {
     public class ConversationRepository(ChatDbContext db) : IConversationRepository
     {
-        public void Add(Conversation conversation)
-        {
-            throw new NotImplementedException();
-        }
+        public void Add(Conversation conversation)=>
+            db.Conversations.Add(conversation);
 
         public Task<bool> DirectConversationExistsAsync(Guid userAId, Guid userBId)=>
             db.Conversations
@@ -24,7 +22,7 @@ namespace ChatServer.Data.Repositories
                 .FirstOrDefaultAsync(c => c.Id == id);
 
         public Task<IReadOnlyList<Conversation>> GetForUserAsync(Guid userId) =>
-            db.Conversations
+            db.Conversations.AsNoTracking()
             .Where(c=>c.Participants.Any(p => p.UserId == userId))
                 .Include(c => c.Participants)
                 .Include(p => p.Messages.OrderByDescending(m=>m.SentAt).Take(1))

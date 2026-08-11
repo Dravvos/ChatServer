@@ -1,4 +1,4 @@
-﻿using ChatServer.DTO;
+﻿using ChatServer.Contracts;
 
 namespace ChatServer.Services.Interfaces
 {

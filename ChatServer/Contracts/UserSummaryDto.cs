@@ -1,6 +1,6 @@
 ﻿using ChatServer.Common.Enums;
 
-namespace ChatServer.DTO
+namespace ChatServer.Contracts
 {
     public record UserSummaryDto(Guid Id, string Username, string? AvatarUrl, UserStatus Status);
 }
