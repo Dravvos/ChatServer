@@ -6,6 +6,7 @@ using ChatServer.Realtime;
 using ChatServer.Services;
 using ChatServer.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
@@ -50,7 +51,15 @@ builder.Services.AddSingleton<IUserConnectionTracker, InMemoryUserConnectionTrac
 // Api (implementações que dependem de tipos web/SignalR)
 builder.Services.AddScoped<IChatNotifier, ChatNotifier>();
 builder.Services.AddSingleton<IUserIdProvider, JwtUserIdProvider>();
-
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("auth", opt =>
+    {
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.PermitLimit = 5;
+        opt.QueueLimit = 0;
+    });
+});
 builder.Services.AddSignalR();
 
 builder.Services.AddControllers();
