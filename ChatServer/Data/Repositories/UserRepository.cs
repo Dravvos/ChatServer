@@ -6,6 +6,9 @@ namespace ChatServer.Data.Repositories
 {
     public class UserRepository(ChatDbContext db) : IUserRepository
     {
+        public void Add(User user) =>
+            db.Users.Add(user);
+
         public Task<User?> GetByIdAsync(Guid id) =>
                         db.Users.SingleOrDefaultAsync(u => u.Id == id);
 

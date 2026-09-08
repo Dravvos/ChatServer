@@ -1,4 +1,5 @@
-﻿using ChatServer.DTO.Response;
+﻿using ChatServer.DTO.Request;
+using ChatServer.DTO.Response;
 using ChatServer.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -14,10 +15,10 @@ namespace ChatServer.Controllers
     {
         [HttpPost("login")]
         [EnableRateLimiting("auth")]
-        public async Task<IActionResult> Login(LoginRequest req)
+        public async Task<IActionResult> Login(ChatServer.DTO.Request.LoginRequest req)
         {
             var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
-            var result = await authService.LoginAsync(req.Email, req.Password, ip);
+            var result = await authService.LoginAsync(req.Username, req.Password, ip);
 
             return result switch
             {
@@ -48,6 +49,20 @@ namespace ChatServer.Controllers
         {
             await authService.LogoutAsync(req.RefreshToken);
             return NoContent();
+        }
+
+        [HttpPost("signup")]
+        [EnableRateLimiting("auth")]
+        public async Task<IActionResult> SignUp(SignUpRequest req)
+        {
+            var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+            var result = await authService.SignUpAsync(req.Username, req.Email, req.Password, ip);
+            return result switch
+            {
+                AuthResult.Success success => Ok(new AuthResponse(success.AccessToken, success.RefreshToken)),
+                AuthResult.ValidationFailed invalid => BadRequest(new { message = invalid.Reason }),
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new { message = "Unknown error" })
+            };
         }
     }
 }

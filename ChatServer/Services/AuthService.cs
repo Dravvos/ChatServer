@@ -2,6 +2,7 @@
 using ChatServer.Data.Repositories.Interfaces;
 using ChatServer.Services.Interfaces;
 using Microsoft.Extensions.Options;
+using System.Net.Mail;
 
 namespace ChatServer.Services
 {
@@ -93,5 +94,45 @@ namespace ChatServer.Services
                 await refreshTokens.SaveChangesAsync();
             }
         }
+
+        public async Task<AuthResult> SignUpAsync(string username, string email, string password, string ipAddress)
+        {
+            if (string.IsNullOrWhiteSpace(username) || username.Length > 32)
+                return new AuthResult.ValidationFailed("Invalid username or password.");
+            if (await users.GetByUsernameAsync(username) is not null)
+                return new AuthResult.ValidationFailed("Invalid username or password.");
+            if (string.IsNullOrWhiteSpace(password) || password.Length < 8)
+                return new AuthResult.ValidationFailed("Password must have 8 characters at minimum");
+            if (EmailValidator.IsValidEmail(email) == false)
+                return new AuthResult.ValidationFailed("Invalid Email");
+
+            var user = new User
+            {
+                Id = Guid.NewGuid(),
+                Username = username.Trim(),
+                Email = email.Trim(),
+                SecurityStamp = Guid.NewGuid().ToString("N"),
+                CreatedAt = DateTime.UtcNow
+            };
+            user.PasswordHash = passwordService.HashPassword(user, password);
+            users.Add(user);
+            await users.SaveChangesAsync();
+
+            var access = tokenService.GenerateAccessToken(user);
+            var (rawRefresh, refreshHash) = tokenService.GenerateRefreshToken();
+            refreshTokens.Add(new RefreshToken
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                TokenHash = refreshHash,
+                ExpiresAt = DateTime.UtcNow.AddDays(jwtSettings.Value.RefreshTokenDays),
+                CreatedAt = DateTime.UtcNow,
+                CreatedByIp = ipAddress
+            });
+            await refreshTokens.SaveChangesAsync();
+
+            return new AuthResult.Success(access, rawRefresh);
+        }
+
     }
 }

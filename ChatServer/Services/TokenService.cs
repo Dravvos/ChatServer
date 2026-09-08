@@ -8,10 +8,15 @@ using System.Security.Cryptography;
 
 namespace ChatServer.Services
 {
-    public class TokenService(IOptions<JwtSettings> settings):ITokenService
+    public class TokenService:ITokenService
     {
-        private readonly JwtSettings _jwtSettings = settings.Value;
-        
+        private readonly JwtSettings _jwtSettings;
+
+        public TokenService(IOptions<JwtSettings> jwtSettings)
+        {
+            _jwtSettings = jwtSettings.Value;
+        }
+
         public string GenerateAccessToken(User user)
         {
             var claims = new[]
