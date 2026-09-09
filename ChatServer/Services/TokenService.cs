@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace ChatServer.Services
 {
@@ -26,7 +27,7 @@ namespace ChatServer.Services
                 new Claim("username", user.Username),
                 new Claim("sstamp", user.SecurityStamp)
             };
-            var key = new SymmetricSecurityKey(Convert.FromBase64String(_jwtSettings.SigningKey));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SigningKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(

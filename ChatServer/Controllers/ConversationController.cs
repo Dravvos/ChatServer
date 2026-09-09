@@ -1,6 +1,6 @@
 ﻿using ChatServer.DTO.Request;
 using ChatServer.DTO.Result;
-using ChatServer.Services;
+using ChatServer.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,9 +12,9 @@ namespace ChatServer.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class ConversationController(ConversationService conversationService) : ControllerBase
+    public class ConversationController(IConversationService conversationService) : ControllerBase
     {
-        private Guid CurrentUserId => Guid.Parse(User.FindFirstValue(JwtRegisteredClaimNames.Sub)!);
+        private Guid CurrentUserId => Guid.Parse(User.Claims.FirstOrDefault()?.Value!);
 
         [HttpGet]
         public async Task<IActionResult> GetMyConversations()
