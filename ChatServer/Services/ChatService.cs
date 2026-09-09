@@ -12,6 +12,11 @@ namespace ChatServer.Services
         IMessageRepository messages,
         IChatNotifier notifier) : IChatService
     {
+        public Task DeleteMessageAsync(Guid userId, Guid conversationId, Guid messageId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<MarkAsReadResult> MarkAsReadAsync(Guid userId, Guid conversationId, Guid messageId)
         {
             var conversation = await conversations.GetByIdWithParticipantsAsync(conversationId);

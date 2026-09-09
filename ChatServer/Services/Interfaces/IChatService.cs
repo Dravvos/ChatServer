@@ -7,5 +7,6 @@ namespace ChatServer.Services.Interfaces
         Task<SendMessageResult> SendMessageAsync(Guid senderId, Guid conversationId, string content);
         Task<MarkAsReadResult> MarkAsReadAsync(Guid userId, Guid conversationId, Guid messageId);
         Task NotifyTypingAsync(Guid userId, Guid conversationId);
+        Task DeleteMessageAsync(Guid userId, Guid conversationId, Guid messageId);
     }
 }

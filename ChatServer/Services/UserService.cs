@@ -12,7 +12,7 @@ namespace ChatServer.Services
             if (user == null)
                 return null;
             return new(
-            
+
                 user.Id,
                 user.Username,
                 user.Email,
@@ -20,6 +20,9 @@ namespace ChatServer.Services
                 user.Status
             );
         }
+
+        public Task<Guid> GetUserIdByUsername(string username) =>
+            users.GetUserIdByUsername(username);
 
         public async Task<IReadOnlyList<UserSummaryDto>> SearchAsync(Guid requesterId, string query)
         {

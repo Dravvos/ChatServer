@@ -7,5 +7,6 @@ namespace ChatServer.Services.Interfaces
         Task<UserProfileDto?> GetProfileAsync(Guid userId);
         Task<IReadOnlyList<UserSummaryDto>> SearchAsync(Guid requesterId, string query);
         Task<UserProfileDto> UpdateAvatarAsync(Guid userId, string avatarUrl);
+        Task<Guid> GetUserIdByUsername(string username);
     }
 }

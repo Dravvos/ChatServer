@@ -9,5 +9,6 @@ namespace ChatServer.Data.Repositories.Interfaces
         Task SaveChangesAsync();
         Task<IReadOnlyList<User>> SearchAsync(string query, Guid requesterId, int limit = 10);
         void Add(User user); // e em UserRepository: db.Users.Add(user);
+        public Task<Guid> GetUserIdByUsername(string username);
     }
 }

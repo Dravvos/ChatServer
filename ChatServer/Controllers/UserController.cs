@@ -1,9 +1,6 @@
 ﻿using ChatServer.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 
 namespace ChatServer.Controllers
 {
@@ -12,10 +9,16 @@ namespace ChatServer.Controllers
     [Authorize]
     public class UserController(IUserService userService) : ControllerBase
     {
-        private Guid CurrentUserId => Guid.Parse(User.FindFirstValue(JwtRegisteredClaimNames.Sub)!);
+        private Guid CurrentUserId => Guid.Parse(User.Claims.FirstOrDefault()?.Value!);
 
+        [HttpGet("{username}")]
+        public async Task<IActionResult> Get(string username)
+        {
+            var userId = await userService.GetUserIdByUsername(username);
+            return Ok(userId);
+        }
         [HttpGet("me")]
-        public async Task<IActionResult> GetCurrentUser()=>
+        public async Task<IActionResult> GetCurrentUser() =>
            await userService.GetProfileAsync(CurrentUserId) is { } profile ? Ok(profile) : NotFound();
 
         [HttpGet("search")]

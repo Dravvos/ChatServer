@@ -21,5 +21,8 @@ namespace ChatServer.Data.Repositories
            db.Users.AsNoTracking().Where(u => u.Id != requesterId && EF.Functions.ILike(u.Username, $"%{query}%")) // Postgres
             .OrderBy(u => u.Username).Take(limit).ToListAsync()
             .ContinueWith(t => (IReadOnlyList<User>)t.Result);
+
+        public Task<Guid> GetUserIdByUsername(string username)=>
+            db.Users.Where(x=>x.Username == username).Select(x=>x.Id).FirstOrDefaultAsync();
     }
 }

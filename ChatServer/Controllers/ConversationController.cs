@@ -2,10 +2,7 @@
 using ChatServer.DTO.Result;
 using ChatServer.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 
 namespace ChatServer.Controllers
 {
