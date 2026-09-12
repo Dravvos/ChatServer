@@ -9,27 +9,43 @@ namespace ChatServer.Hubs
     [Authorize]
     public class ChatHub(IChatService chatService, IUserConnectionTracker connections, IChatNotifier notifier) : Hub
     {
-        private Guid UserId => Guid.Parse(Context.UserIdentifier!);
+        private Guid? UserId
+        {
+            get
+            {
+                if (Guid.TryParse(Context.User.Claims.FirstOrDefault()?.Value, out var userId))
+                    return userId;
+                return null;
+            }
+        }
 
         public override async Task OnConnectedAsync()
         {
-            await connections.AddConnectionAsync(UserId, Context.ConnectionId);
-            if (await connections.GetConnectionCountAsync(UserId) == 1)
-                await notifier.NotifyUserStatusChangedAsync(UserId, UserStatus.Online);
+            if (UserId is not Guid userId)
+            {
+                // Logue o erro e derrube a conexão. O cliente receberá um erro claro.
+                Context.Abort();
+                return;
+            }
+
+            await connections.AddConnectionAsync(userId, Context.ConnectionId);
+            if (await connections.GetConnectionCountAsync(userId) == 1)
+                await notifier.NotifyUserStatusChangedAsync(userId, UserStatus.Online);
+
             await base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            await connections.RemoveConnectionAsync(UserId, Context.ConnectionId);
-            if (await connections.GetConnectionCountAsync(UserId) == 0)
-                await notifier.NotifyUserStatusChangedAsync(UserId, UserStatus.Offline);
+            await connections.RemoveConnectionAsync(UserId.GetValueOrDefault(), Context.ConnectionId);
+            if (await connections.GetConnectionCountAsync(UserId.GetValueOrDefault()) == 0)
+                await notifier.NotifyUserStatusChangedAsync(UserId.GetValueOrDefault(), UserStatus.Offline);
             await base.OnDisconnectedAsync(exception);
         }
 
         public async Task SendMessage(Guid conversationId, string content)
         {
-            var result = await chatService.SendMessageAsync(UserId, conversationId, content);
+            var result = await chatService.SendMessageAsync(UserId.GetValueOrDefault(), conversationId, content);
             if (result is SendMessageResult.NotParticipant)
                 throw new HubException("Você não participa dessa conversa.");
             if (result is SendMessageResult.InvalidContent invalid)
@@ -38,9 +54,9 @@ namespace ChatServer.Hubs
         }
 
         public Task MarkAsRead(Guid conversationId, Guid messageId) =>
-            chatService.MarkAsReadAsync(UserId, conversationId, messageId);
+            chatService.MarkAsReadAsync(UserId.GetValueOrDefault(), conversationId, messageId);
 
         public Task Typing(Guid conversationId) =>
-            chatService.NotifyTypingAsync(UserId, conversationId);
+            chatService.NotifyTypingAsync(UserId.GetValueOrDefault(), conversationId);
     }
 }

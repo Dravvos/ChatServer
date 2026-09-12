@@ -8,5 +8,6 @@ namespace ChatServer.Data.Repositories.Interfaces
         Task<IReadOnlyList<Message>> GetPageAsync(Guid conversationId, DateTime? before, int take);
         Task<int> CountUnreadAsync(Guid conversationId, Guid userId, DateTime? since);
         Task SaveChangesAsync();
+        Task MarkAsReadAsync(Guid messageId);
     }
 }

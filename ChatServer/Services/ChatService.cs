@@ -1,4 +1,4 @@
-﻿using ChatServer.Common.Enums;
+﻿ using ChatServer.Common.Enums;
 using ChatServer.Contracts;
 using ChatServer.Data.Models;
 using ChatServer.Data.Repositories.Interfaces;
@@ -25,6 +25,8 @@ namespace ChatServer.Services
 
             participant.LastReadAt = DateTime.UtcNow;
             await conversations.SaveChangesAsync();
+
+            await messages.MarkAsReadAsync(messageId);
 
             var recipientIds = conversation!.Participants.Select(p => p.UserId).Where(id => id != userId).ToList();
             await notifier.NotifyMessageReadAsync(recipientIds, conversationId, userId, messageId);

@@ -9,7 +9,7 @@ using System.Text;
 
 namespace ChatServer.Services
 {
-    public class TokenService:ITokenService
+    public class TokenService : ITokenService
     {
         private readonly JwtSettings _jwtSettings;
 
@@ -25,7 +25,9 @@ namespace ChatServer.Services
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim("username", user.Username),
-                new Claim("sstamp", user.SecurityStamp)
+                new Claim("sstamp", user.SecurityStamp),
+                new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Name, user.Username)
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SigningKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
