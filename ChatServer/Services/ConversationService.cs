@@ -24,14 +24,15 @@ namespace ChatServer.Services
                 var lastMessage = c.Messages.FirstOrDefault(); // já vem limitado a 1 (filtered include)
                 var unread = await messages.CountUnreadAsync(c.Id, userId, participant.LastReadAt);
 
-                if (string.IsNullOrEmpty(c.Name))
-                {
-                    var otherParticipant = c.Participants.First(p => p.UserId != userId);
-                    var otherUser = await users.GetByIdAsync(otherParticipant.UserId);
-                    c.Name = otherUser?.Username;
-                }
+                var otherParticipant = c.Type == ConversationType.Direct
+           ? c.Participants.FirstOrDefault(p => p.UserId != userId)
+           : null;
+
+                var displayName = c.Name ?? otherParticipant?.User?.Username;
+
                 result.Add(new ConversationSummaryDto(
-                    c.Id, c.Type, c.Name, lastMessage?.Content, lastMessage?.SentAt, unread));
+                    c.Id, c.Type, displayName, lastMessage?.Content, lastMessage?.SentAt, unread,
+                    otherParticipant?.UserId,otherParticipant?.User.Username, otherParticipant?.User.Status));
             }
 
             return result;

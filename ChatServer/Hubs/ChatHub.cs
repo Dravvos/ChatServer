@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.SignalR;
 namespace ChatServer.Hubs
 {
     [Authorize]
-    public class ChatHub(IChatService chatService, IUserConnectionTracker connections, IChatNotifier notifier) : Hub
+    public class ChatHub(IChatService chatService, IUserConnectionTracker connections, IChatNotifier notifier,
+        IPresenceService presence) : Hub
     {
         private Guid? UserId
         {
@@ -28,18 +29,19 @@ namespace ChatServer.Hubs
                 return;
             }
 
-            await connections.AddConnectionAsync(userId, Context.ConnectionId);
-            if (await connections.GetConnectionCountAsync(userId) == 1)
-                await notifier.NotifyUserStatusChangedAsync(userId, UserStatus.Online);
-
+            await presence.UserConnectedAsync(userId, Context.ConnectionId);
             await base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            await connections.RemoveConnectionAsync(UserId.GetValueOrDefault(), Context.ConnectionId);
-            if (await connections.GetConnectionCountAsync(UserId.GetValueOrDefault()) == 0)
-                await notifier.NotifyUserStatusChangedAsync(UserId.GetValueOrDefault(), UserStatus.Offline);
+            if (UserId is not Guid userId)
+            {
+                // Logue o erro e derrube a conexão. O cliente receberá um erro claro.
+                Context.Abort();
+                return;
+            }
+            await presence.UserDisconnectedAsync(userId, Context.ConnectionId);
             await base.OnDisconnectedAsync(exception);
         }
 

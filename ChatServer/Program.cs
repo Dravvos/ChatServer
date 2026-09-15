@@ -61,7 +61,9 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddSingleton<IUserConnectionTracker, InMemoryUserConnectionTracker>();
 
 // Api (implementações que dependem de tipos web/SignalR)
-builder.Services.AddScoped<IChatNotifier, ChatNotifier>();
+builder.Services.AddSingleton<IUserConnectionTracker, InMemoryUserConnectionTracker>();
+builder.Services.AddSingleton<IChatNotifier, ChatNotifier>();
+builder.Services.AddSingleton<IPresenceService, PresenceService>();
 builder.Services.AddSingleton<IUserIdProvider, JwtUserIdProvider>();
 builder.Services.AddRateLimiter(options =>
 {
